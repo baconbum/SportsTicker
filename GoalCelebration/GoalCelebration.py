@@ -104,15 +104,15 @@ class GoalCelebration():
 
 		self.lcd = LiquidCrystalDisplay(pin_rs=lcdPinRS, pin_rw=lcdPinRW, pin_e=lcdPinE, pins_data=lcdPinData, pin_backlight=lcdPinBacklight)
 
-	def playCelebration(self, repeat=3):
+	def playCelebration(self, lineOne, lineTwo, ledPatternRepeat=3):
 
 		lcdCelebrationArgs = {
-			"lineOne": "TOR Goal: #43 N. Kadri (32)",
-			"lineTwo": "Assisted by: #12 C. Brown (10)"
+			"lineOne": lineOne,
+			"lineTwo": lineTwo
 		}
 
 		ledCelebrationArgs = {
-			"repeat": repeat
+			"repeat": ledPatternRepeat
 		}
 
 		p1 = Process(target = self.lcdCelebration, kwargs = lcdCelebrationArgs)

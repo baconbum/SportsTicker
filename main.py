@@ -24,16 +24,17 @@ LCD_BACKLIGHT = 22
 
 localTimeZone = pytz.timezone("Canada/Eastern")
 
-dailySchedule = NHLDailySchedule(datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone).date())
-#dailySchedule = NHLDailySchedule(datetime.date(2017, 4, 9))
+#dailySchedule = NHLDailySchedule(datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone).date())
+dailySchedule = NHLDailySchedule(datetime.date(2017, 4, 9))
 
 celebration = GoalCelebration(ledPinNumbers=[LED_ONE, LED_TWO, LED_THREE, LED_FOUR], ledPattern=GoalCelebration.AWESOME_PATTERN,
 				lcdPinRS=LCD_RS, lcdPinRW=LCD_RW, lcdPinE=LCD_E, lcdPinData=[LCD_DATA_ONE, LCD_DATA_TWO, LCD_DATA_THREE, LCD_DATA_FOUR], lcdPinBacklight=LCD_BACKLIGHT)
 
-for game in dailySchedule.games:
-	lineOne = "{0} @ {1}".format(game.awayTeam, game.homeTeam)
-	lineTwo = game.startTime.astimezone(localTimeZone).strftime("%-I:%M%p")
+for game in dailySchedule.games[:1]:
+	for scoringPlay in game.scoringPlays:
+		lineOne = "{0} Goal ({1} {2})".format(scoringPlay.team.abbreviation, scoringPlay.periodTime, scoringPlay.periodOrdinal)
+		lineTwo = "{0} {1} @ {2} {3}".format(game.awayTeam.abbreviation, scoringPlay.awayScore, game.homeTeam.abbreviation, scoringPlay.homeScore)
 
-	celebration.playCelebration(lineOne=lineOne, lineTwo=lineTwo, ledPatternRepeat=1)
+		celebration.playCelebration(lineOne=lineOne, lineTwo=lineTwo, ledPatternRepeat=1)
 
 GPIO.cleanup()

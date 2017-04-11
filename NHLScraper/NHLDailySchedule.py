@@ -16,7 +16,6 @@ class NHLDailySchedule:
 		scheduleUrl = "https://statsapi.web.nhl.com/api/v1/schedule?startDate={0}&endDate={0}&expand=schedule.scoringplays"
 
 		response = requests.get(scheduleUrl.format(self.date.strftime("%Y-%m-%d")))
-		print(response)
 		data = response.json()
 
 		for gameData in data["dates"][0]["games"]:

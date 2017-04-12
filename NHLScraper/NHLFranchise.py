@@ -35,11 +35,10 @@ class NHLFranchise:
 		connection.close()
 
 	def __constructFranchiseFromAPI(self, id):
-		franchise =  NHLFranchise.GetFranchisesFromAPI(idFilter=id)[0]
+		franchisesData =  NHLFranchise.__getFranchisesDataFromAPI(idFilter=id)
 
-		self.id =			franchise.id
-		self.locationName =	franchise.locationName
-		self.teamName =		franchise.teamName
+		if (len(franchisesData) > 0):
+			self.__constructFranchiseFromJSON(franchisesData[0])
 
 	def getFranchisesFromAPI(idFilter=None):
 		franchisesData = NHLFranchise.__getFranchisesDataFromAPI(idFilter)

@@ -44,7 +44,7 @@ class NHLFranchise:
 	def __constructFranchiseFromAPI(self, id):
 		franchisesData =  NHLFranchise.__getFranchisesDataFromAPI(idFilter=id)
 
-		if (len(franchisesData) > 0):
+		if (franchisesData != None and len(franchisesData) > 0):
 			self.__constructFranchiseFromJSON(franchisesData[0])
 		else:
 			print("No Franchises exist in the API with ID {0}".format(id))
@@ -68,7 +68,11 @@ class NHLFranchise:
 		response = requests.get(franchisesUrl)
 		data = response.json()
 
-		return data["franchises"]
+		if ("franchises" in data):
+			return data["franchises"]
+		else:
+			print("Error retrieving Franchises from API in NHLFranchise.__getFranchisesDataFromAPI, exiting method")
+			return
 
 	def populateDatabaseWithFranchisesFromAPI():
 		connection =	sqlite3.connect("SportsTicker.db")

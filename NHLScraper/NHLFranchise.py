@@ -23,7 +23,12 @@ class NHLFranchise:
 		connection =	sqlite3.connect("SportsTicker.db")
 		cursor =		connection.cursor()
 
-		cursor.execute("SELECT ID, LocationName, TeamName FROM Franchises WHERE ID=?", (id,))
+		try:
+			cursor.execute("SELECT ID, LocationName, TeamName FROM Franchises WHERE ID=?", (id,))
+		except sqlite3.OperationalError:
+			print("Error executing Franchises SELECT query in NHLFranchise.__constructFranchiseFromDatabase, exiting method")
+			connection.close()
+			return
 
 		row = cursor.fetchone()
 
@@ -31,6 +36,8 @@ class NHLFranchise:
 			self.id =			row[0]
 			self.locationName =	row[1]
 			self.teamName =		row[2]
+		else:
+			print("No Franchises exist in the database with ID {0}".format(id))
 
 		connection.close()
 
@@ -39,6 +46,8 @@ class NHLFranchise:
 
 		if (len(franchisesData) > 0):
 			self.__constructFranchiseFromJSON(franchisesData[0])
+		else:
+			print("No Franchises exist in the API with ID {0}".format(id))
 
 	def getFranchisesFromAPI(idFilter=None):
 		franchisesData = NHLFranchise.__getFranchisesDataFromAPI(idFilter)
@@ -65,12 +74,20 @@ class NHLFranchise:
 		connection =	sqlite3.connect("SportsTicker.db")
 		cursor =		connection.cursor()
 
-		cursor.execute("DELETE FROM Franchises")
+		try:
+			cursor.execute("DELETE FROM Franchises")
+		except sqlite3.OperationalError:
+			print("Error executing Franchises DELETE query in NHLFranchise.populateDatabaseWithFranchisesFromAPI, exiting method")
+			connection.close()
+			return
 
 		franchises = NHLFranchise.getFranchisesFromAPI()
 
 		for franchise in franchises:
-			cursor.execute("INSERT INTO Franchises (ID, TeamName, LocationName) VALUES (?, ?, ?)", (franchise.id, franchise.teamName, franchise.locationName))
+			try:
+				cursor.execute("INSERT INTO Franchises (ID, TeamName, LocationName) VALUES (?, ?, ?)", (franchise.id, franchise.teamName, franchise.locationName))
+			except sqlite3.OperationalError:
+				print("Error inserting record with ID {0} into Franchise table".format(franchise.id))
 
 		connection.commit()
 		connection.close()

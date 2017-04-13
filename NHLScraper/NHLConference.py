@@ -13,6 +13,8 @@ class NHLConference:
 			self.__constructConferenceFromDatabase(idForDatabase)
 		elif (idForAPI != None):
 			self.__constructConferenceFromAPI(idForAPI)
+		else:
+			print("No NHLConference object created, need to specify at least one parameter.")
 
 	def __constructConferenceFromJSON(self, conferenceData):
 		self.id =			conferenceData["id"]
@@ -58,8 +60,9 @@ class NHLConference:
 
 		conferences = list()
 
-		for conferenceData in conferencesData:
-			conferences.append(NHLConference(conferenceData=conferenceData))
+		if (conferencesData!= None):
+			for conferenceData in conferencesData:
+				conferences.append(NHLConference(conferenceData=conferenceData))
 
 		return conferences
 

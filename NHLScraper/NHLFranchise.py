@@ -13,6 +13,8 @@ class NHLFranchise:
 			self.__constructFranchiseFromDatabase(idForDatabase)
 		elif (idForAPI != None):
 			self.__constructFranchiseFromAPI(idForAPI)
+		else:
+			print("No NHLFranchise object created, need to specify at least one parameter.")
 
 	def __constructFranchiseFromJSON(self, franchiseData):
 		self.id =			franchiseData["franchiseId"]
@@ -54,8 +56,9 @@ class NHLFranchise:
 
 		franchises = list()
 
-		for franchiseData in franchisesData:
-			franchises.append(NHLFranchise(franchiseData=franchiseData))
+		if (franchisesData != None):
+			for franchiseData in franchisesData:
+				franchises.append(NHLFranchise(franchiseData=franchiseData))
 
 		return franchises
 

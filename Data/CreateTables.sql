@@ -35,8 +35,7 @@ CREATE TABLE Teams(
 	Abbreviation	TEXT,
 	Active				BOOLEAN,
 	FOREIGN KEY(FranchiseID)	REFERENCES Franchises(ID),
-	FOREIGN KEY(DivisionID)		REFERENCES Divisions(ID),
-	FOREIGN KEY(ConferenceID)	REFERENCES Conferences(ID)
+	FOREIGN KEY(DivisionID)		REFERENCES Divisions(ID)
 );
 
 COMMIT;

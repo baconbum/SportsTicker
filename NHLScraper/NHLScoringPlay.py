@@ -2,6 +2,7 @@
 
 import datetime, pytz
 from .NHLTeam import NHLTeam
+from .NHLScoringPlayPlayer import NHLScoringPlayPlayer
 
 class NHLScoringPlay:
 	'Details of a scoring play'
@@ -16,7 +17,18 @@ class NHLScoringPlay:
 		self.periodOrdinal =	scoringPlayData["about"]["ordinalNum"]
 		self.periodTime =		scoringPlayData["about"]["periodTime"]
 
-		self.parsePlayers(scoringPlayData["players"])
+		self.event =			scoringPlayData["result"]["event"]
+		self.eventCode =		scoringPlayData["result"]["eventCode"]
 
-	def parsePlayers(self, playersData):
-		pass
+		self.__parsePlayers(scoringPlayData["players"])
+
+	def __parsePlayers(self, playersData):
+		self.assistingPlayers = list()
+
+		for playerData in playersData:
+			if (playerData["playerType"] == "Scorer"):
+				self.scorer =	NHLScoringPlayPlayer(playerData)
+			elif (playerData["playerType"] == "Assist"):
+				self.assistingPlayers.append(NHLScoringPlayPlayer(playerData))
+			elif (playerData["playerType"] == "Goalie"):
+				self.goalie =	NHLScoringPlayPlayer(playerData)

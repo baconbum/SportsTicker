@@ -7,7 +7,7 @@ class NHLScoringPlay:
 	'Details of a scoring play'
 
 	def __init__(self, scoringPlayData):
-		self.team =				NHLTeam(scoringPlayData["team"]["id"])
+		self.team =				NHLTeam(idForDatabase=scoringPlayData["team"]["id"])
 		self.timeStamp =		pytz.UTC.localize(datetime.datetime.strptime(scoringPlayData["about"]["dateTime"], "%Y-%m-%dT%H:%M:%SZ"))
 
 		self.homeScore =		scoringPlayData["about"]["goals"]["home"]
@@ -15,3 +15,8 @@ class NHLScoringPlay:
 		self.period =			scoringPlayData["about"]["period"]
 		self.periodOrdinal =	scoringPlayData["about"]["ordinalNum"]
 		self.periodTime =		scoringPlayData["about"]["periodTime"]
+
+		self.parsePlayers(scoringPlayData["players"])
+
+	def parsePlayers(self, playersData):
+		pass

@@ -2,7 +2,7 @@
 
 import datetime, pytz
 import RPi.GPIO as GPIO
-from GoalCelebration.GoalCelebration import GoalCelebration
+from SportsTicker.SportsTicker import SportsTicker
 from NHLScraper.NHLDailySchedule import NHLDailySchedule
 
 # Define the GPIO pins to be used
@@ -27,14 +27,14 @@ localTimeZone = pytz.timezone("Canada/Eastern")
 #dailySchedule = NHLDailySchedule(datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone).date())
 dailySchedule = NHLDailySchedule(datetime.date(2017, 4, 15))
 
-celebration = GoalCelebration(ledPinNumbers=[LED_ONE, LED_TWO, LED_THREE, LED_FOUR], ledPattern=GoalCelebration.AWESOME_PATTERN,
+sportsTicker = SportsTicker(ledPinNumbers=[LED_ONE, LED_TWO, LED_THREE, LED_FOUR], ledPattern=SportsTicker.LED_PATTERN_AWESOME,
 				lcdPinRS=LCD_RS, lcdPinRW=LCD_RW, lcdPinE=LCD_E, lcdPinData=[LCD_DATA_ONE, LCD_DATA_TWO, LCD_DATA_THREE, LCD_DATA_FOUR], lcdPinBacklight=LCD_BACKLIGHT)
 
 for game in dailySchedule.games:
 	for index, scoringPlay in enumerate(game.scoringPlays):
 		scoringPlayOutput = game.getScoringPlayOutput(index)
-		
-		celebration.playCelebration(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPatternRepeat=1)
-		celebration.playCelebration(lineOne=scoringPlayOutput[2], lineTwo=scoringPlayOutput[3], ledPatternRepeat=0)
+
+		sportsTicker.displayNotification(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPatternRepeat=1)
+		sportsTicker.displayNotification(lineOne=scoringPlayOutput[2], lineTwo=scoringPlayOutput[3], ledPatternRepeat=0)
 
 GPIO.cleanup()

@@ -7,24 +7,24 @@ from collections import namedtuple
 from .LightEmittingDiode import LightEmittingDiode
 from .LiquidCrystalDisplay import LiquidCrystalDisplay
 
-class GoalCelebration():
+class SportsTicker():
 
 	# The number of LEDs hooked up
 	MAX_LEDs = 4
 
 	PatternSegment = namedtuple('PatternSegment', ['duration', 'lights'])
 
-	ALTERNATING_PATTERN = [
+	LED_PATTERN_ALTERNATING = [
 		PatternSegment(duration=0.5,	lights=[0]),
 		PatternSegment(duration=0.5,	lights=[1])
 	]
 
-	SIMULTANEOUS_PATTERN = [
+	LED_PATTERN_SIMULTANEOUS = [
 		PatternSegment(duration=0.5,	lights=[0,1,2,3]),
 		PatternSegment(duration=0.25,	lights=[])
 	]
 
-	AWESOME_PATTERN = [
+	LED_PATTERN_AWESOME = [
 		PatternSegment(duration=0.1,	lights=[0]),
 		PatternSegment(duration=0.1,	lights=[1]),
 		PatternSegment(duration=0.1,	lights=[2]),
@@ -104,29 +104,26 @@ class GoalCelebration():
 
 		self.lcd = LiquidCrystalDisplay(pin_rs=lcdPinRS, pin_rw=lcdPinRW, pin_e=lcdPinE, pins_data=lcdPinData, pin_backlight=lcdPinBacklight)
 
-	def playCelebration(self, lineOne, lineTwo, ledPatternRepeat=3):
+	def displayNotification(self, lineOne, lineTwo, ledPatternRepeat=3):
 
-		lcdCelebrationArgs = {
+		lcdNotificationArgs = {
 			"lineOne": lineOne,
 			"lineTwo": lineTwo
 		}
 
-		ledCelebrationArgs = {
+		ledNotificationArgs = {
 			"repeat": ledPatternRepeat
 		}
 
-		p1 = Process(target = self.lcdCelebration, kwargs = lcdCelebrationArgs)
+		p1 = Process(target = self.lcd.displayScrollingText, kwargs = lcdNotificationArgs)
 		p1.start()
-		p2 = Process(target = self.ledCelebration, kwargs = ledCelebrationArgs)
+		p2 = Process(target = self.ledNotification, kwargs = ledNotificationArgs)
 		p2.start()
 
 		p1.join()
 		p2.join()
 
-	def lcdCelebration(self, lineOne, lineTwo=None):
-		self.lcd.displayScrollingText(lineOne, lineTwo)
-
-	def ledCelebration(self, repeat):
+	def ledNotification(self, repeat):
 		# Ensure all LEDs are off to start
 		self.toggleAllLEDs(False)
 

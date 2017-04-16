@@ -30,9 +30,22 @@ class NHLGame:
 
 		scoringPlay = self.scoringPlays[scoringPlayIndex]
 
-		scoringPlayOutputLines.append("{0} Goal ({1} {2})".format(scoringPlay.team.abbreviation, scoringPlay.periodTime, scoringPlay.periodOrdinal))
-		scoringPlayOutputLines.append("{0} {1} @ {2} {3}".format(self.awayTeam.abbreviation, scoringPlay.awayScore, self.homeTeam.abbreviation, scoringPlay.homeScore))
-		scoringPlayOutputLines.append("{0} ({1})".format(scoringPlay.scorer.fullName, scoringPlay.scorer.seasonTotal))
+		scoringPlayOutputLines.append("{0}{1} Goal ({2} {3})".format(
+			scoringPlay.team.abbreviation,
+			" {0}".format(scoringPlay.strength) if scoringPlay.strength in ("PPG", "SHG") else "",
+			scoringPlay.periodTime,
+			scoringPlay.periodOrdinal))
+
+		scoringPlayOutputLines.append("{0} {1} @ {2} {3}".format(
+			self.awayTeam.abbreviation,
+			scoringPlay.awayScore,
+			self.homeTeam.abbreviation,
+			scoringPlay.homeScore))
+
+		scoringPlayOutputLines.append("{0} ({1})".format(
+			scoringPlay.scorer.fullName,
+			scoringPlay.scorer.seasonTotal))
+
 		if (len(scoringPlay.assistingPlayers) > 0):
 			assistOutput = "Assisted by: {0} ({1})".format(scoringPlay.assistingPlayers[0].fullName, scoringPlay.assistingPlayers[0].seasonTotal)
 			if (len(scoringPlay.assistingPlayers) > 1):

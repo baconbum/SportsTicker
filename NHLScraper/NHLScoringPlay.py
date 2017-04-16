@@ -17,9 +17,10 @@ class NHLScoringPlay:
 		self.periodOrdinal =	scoringPlayData["about"]["ordinalNum"]
 		self.periodTime =		scoringPlayData["about"]["periodTime"]
 
+		self.strength =			scoringPlayData["result"]["strength"]["code"]
 		self.event =			scoringPlayData["result"]["event"]
 		self.eventCode =		scoringPlayData["result"]["eventCode"]
-
+		
 		self.__parsePlayers(scoringPlayData["players"])
 
 	def __parsePlayers(self, playersData):

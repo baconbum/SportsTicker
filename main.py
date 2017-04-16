@@ -17,7 +17,6 @@ sportsTicker = SportsTicker(
 		int(config.get('ledPins', 'LED_THREE')),
 		int(config.get('ledPins', 'LED_FOUR'))
 	],
-	ledPattern =	SportsTicker.LED_PATTERN_AWESOME,
 	lcdPinRS =		int(config.get('lcdPins', 'LCD_RS')),
 	lcdPinRW =		int(config.get('lcdPins', 'LCD_RW')) if config.get('lcdPins', 'LCD_RW') != None else None,
 	lcdPinE =		int(config.get('lcdPins', 'LCD_E')),
@@ -44,7 +43,7 @@ for game in dailySchedule.games:
 		# Output the scoring play information to the SportsTicker
 		scoringPlayOutput = game.getScoringPlayOutput(index)
 
-		sportsTicker.displayNotification(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPatternRepeat=1)
+		sportsTicker.displayNotification(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPattern=SportsTicker.LED_PATTERN_AWESOME, ledPatternRepeat=1)
 		sportsTicker.displayNotification(lineOne=scoringPlayOutput[2], lineTwo=scoringPlayOutput[3], ledPatternRepeat=0)
 
 GPIO.cleanup()

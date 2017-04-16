@@ -1,37 +1,47 @@
 #!/usr/bin/env python
 
+from configparser import ConfigParser
 import datetime, pytz
 import RPi.GPIO as GPIO
 from SportsTicker.SportsTicker import SportsTicker
 from NHLScraper.NHLDailySchedule import NHLDailySchedule
 
-# Define the GPIO pins to be used
-LED_ONE = 35
-LED_TWO = 36
-LED_THREE = 37
-LED_FOUR = 38
+config = ConfigParser(allow_no_value=True)
+config.read('config.ini')
 
-LCD_RS = 11
-LCD_RW = None
-LCD_E = 12
+# Create the SportsTicker object to control the LEDs and LCD
+sportsTicker = SportsTicker(
+	ledPinNumbers = [
+		int(config.get('ledPins', 'LED_ONE')),
+		int(config.get('ledPins', 'LED_TWO')),
+		int(config.get('ledPins', 'LED_THREE')),
+		int(config.get('ledPins', 'LED_FOUR'))
+	],
+	ledPattern =	SportsTicker.LED_PATTERN_AWESOME,
+	lcdPinRS =		int(config.get('lcdPins', 'LCD_RS')),
+	lcdPinRW =		int(config.get('lcdPins', 'LCD_RW')) if config.get('lcdPins', 'LCD_RW') != None else None,
+	lcdPinE =		int(config.get('lcdPins', 'LCD_E')),
+	lcdPinData = [
+		int(config.get('lcdPins', 'LCD_DATA_ONE')),
+		int(config.get('lcdPins', 'LCD_DATA_TWO')),
+		int(config.get('lcdPins', 'LCD_DATA_THREE')),
+		int(config.get('lcdPins', 'LCD_DATA_FOUR'))
+	],
+	lcdPinBacklight =	int(config.get('lcdPins', 'LCD_BACKLIGHT'))
+)
 
-LCD_DATA_ONE = 13
-LCD_DATA_TWO = 15
-LCD_DATA_THREE = 16
-LCD_DATA_FOUR = 18
+localTimeZone = pytz.timezone(config.get('miscellaneous', 'timezone'))
 
-LCD_BACKLIGHT = 22
+# Get the NHLDailySchedule object that contains all of the scoring data for the day
+dailySchedule = NHLDailySchedule(datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone).date())
+#dailySchedule = NHLDailySchedule(datetime.date(2017, 4, 15))
 
-localTimeZone = pytz.timezone("Canada/Eastern")
-
-#dailySchedule = NHLDailySchedule(datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone).date())
-dailySchedule = NHLDailySchedule(datetime.date(2017, 4, 15))
-
-sportsTicker = SportsTicker(ledPinNumbers=[LED_ONE, LED_TWO, LED_THREE, LED_FOUR], ledPattern=SportsTicker.LED_PATTERN_AWESOME,
-				lcdPinRS=LCD_RS, lcdPinRW=LCD_RW, lcdPinE=LCD_E, lcdPinData=[LCD_DATA_ONE, LCD_DATA_TWO, LCD_DATA_THREE, LCD_DATA_FOUR], lcdPinBacklight=LCD_BACKLIGHT)
-
+# Loop through all games in the day
 for game in dailySchedule.games:
+	# Loop through all of the scoring plays in the game
 	for index, scoringPlay in enumerate(game.scoringPlays):
+
+		# Output the scoring play information to the SportsTicker
 		scoringPlayOutput = game.getScoringPlayOutput(index)
 
 		sportsTicker.displayNotification(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPatternRepeat=1)

@@ -38,4 +38,11 @@ CREATE TABLE Teams(
 	FOREIGN KEY(DivisionID)		REFERENCES Divisions(ID)
 );
 
+CREATE TABLE ScoringPlays(
+	ID						INTEGER	PRIMARY KEY	NOT NULL,
+	EventCode			TEXT,
+	APITimeStamp	TEXT,
+	Displayed			BOOLEAN
+);
+
 COMMIT;

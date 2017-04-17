@@ -33,8 +33,10 @@ sportsTicker = SportsTicker(
 localTimeZone = pytz.timezone(config.get('miscellaneous', 'timezone'))
 
 def mainLoop():
+	scheduleDate = datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone) - datetime.timedelta(hours=int(config.get('miscellaneous', 'dateRolloverOffset')))
+
 	# Get the NHLDailySchedule object that contains all of the scoring data for the day
-	dailySchedule = NHLDailySchedule(datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone).date())
+	dailySchedule = NHLDailySchedule(scheduleDate.date())
 	#dailySchedule = NHLDailySchedule(datetime.date(2017, 4, 15))
 
 	# Loop through all games in the day

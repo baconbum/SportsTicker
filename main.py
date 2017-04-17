@@ -39,7 +39,6 @@ def mainLoop():
 
 	# Get the NHLDailySchedule object that contains all of the scoring data for the day
 	dailySchedule = NHLDailySchedule(scheduleDate.date())
-	#dailySchedule = NHLDailySchedule()
 
 	# Loop through all games in the day
 	for game in dailySchedule.games:

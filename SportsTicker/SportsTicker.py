@@ -9,9 +9,6 @@ from .LiquidCrystalDisplay import LiquidCrystalDisplay
 
 class SportsTicker():
 
-	# The number of LEDs hooked up
-	MAX_LEDs = 4
-
 	PatternSegment = namedtuple('PatternSegment', ['duration', 'lights'])
 
 	LED_PATTERN_ALTERNATING = [
@@ -91,12 +88,7 @@ class SportsTicker():
 
 	def __init__(self, ledPinNumbers, lcdPinRS, lcdPinRW, lcdPinE, lcdPinData, lcdPinBacklight = None):
 
-		self.ledCollection = []
-
-		# If there are more than MAX_LEDs given in the pinNumbers list, trim the list
-		if (len(ledPinNumbers) > self.MAX_LEDs):
-			warnings.warn("The maximum number of LEDs is currently set to %d, and %d were specified. Trimming list." % (self.MAX_LEDs, len(pinNumbers)), Warning)
-			ledPinNumbers = ledPinNumbers[0:self.MAX_LEDs]
+		self.ledCollection = list()
 
 		for pinNumber in ledPinNumbers:
 			self.ledCollection.append(LightEmittingDiode(pinNumber))

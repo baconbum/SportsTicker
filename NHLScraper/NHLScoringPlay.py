@@ -36,17 +36,17 @@ class NHLScoringPlay:
 			elif (playerData["playerType"] == "Goalie"):
 				self.goalie =	NHLScoringPlayPlayer(playerData)
 
-	def withinDisplayGracePeriod(self):
+	def isPastMaximumAge(self):
 		config = ConfigParser(allow_no_value=True)
 		config.read('config.ini')
 
 		currentDateTime = datetime.datetime.now(datetime.timezone.utc)
 
-		if (config.get('miscellaneous', 'displayGraceThreshold') == None or
-			self.timeStamp > currentDateTime - datetime.timedelta(minutes=int(config.get('miscellaneous', 'displayGraceThreshold')))):
-			return True
-		else:
+		if (config.get('miscellaneous', 'maximumGoalAgeForDisplay') == None or
+			self.timeStamp > currentDateTime - datetime.timedelta(minutes=int(config.get('miscellaneous', 'maximumGoalAgeForDisplay')))):
 			return False
+		else:
+			return True
 
 	def alreadyDisplayed(self):
 		connection =	sqlite3.connect("SportsTicker.db")

@@ -33,18 +33,21 @@ sportsTicker = SportsTicker(
 localTimeZone = pytz.timezone(config.get('miscellaneous', 'timezone'))
 
 def mainLoop():
-	scheduleDate = datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone) - datetime.timedelta(hours=int(config.get('miscellaneous', 'dateRolloverOffset')))
+	scheduleDate = datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone)
+	#scheduleDate = datetime.datetime(2017, 4, 15, 23, 59, 59) #Testing date only
+	scheduleDate = scheduleDate - datetime.timedelta(hours=int(config.get('miscellaneous', 'dateRolloverOffset')))
 
 	# Get the NHLDailySchedule object that contains all of the scoring data for the day
 	dailySchedule = NHLDailySchedule(scheduleDate.date())
-	#dailySchedule = NHLDailySchedule(datetime.date(2017, 4, 15))
+	#dailySchedule = NHLDailySchedule()
 
 	# Loop through all games in the day
 	for game in dailySchedule.games:
 		# Loop through all of the scoring plays in the game
 		for index, scoringPlay in enumerate(game.scoringPlays):
+			# Ensure scoring play should be displayed
 			if (not scoringPlay.alreadyDisplayed()):
-				if (scoringPlay.withinDisplayGracePeriod()):
+				if (not scoringPlay.isPastMaximumAge()):
 					# Output the scoring play information to the SportsTicker
 					scoringPlayOutput = game.getScoringPlayOutput(index)
 
@@ -53,11 +56,11 @@ def mainLoop():
 
 					scoringPlay.markAsDisplayed()
 				else:
-					print("Scoring play {0} is more than {1} minute(s) old, skipping.".format(scoringPlay.eventCode, config.get('miscellaneous', 'displayGraceThreshold')))
+					print("Scoring play {0} is more than {1} minute(s) old, skipping.".format(scoringPlay.eventCode, config.get('miscellaneous', 'maximumGoalAgeForDisplay')))
 			else:
 				print("Scoring play {0} has already been displayed, skipping.".format(scoringPlay.eventCode))
 
-	time.sleep(int(config.get('miscellaneous', 'pollingRate')))
+	time.sleep(int(config.get('miscellaneous', 'apiPollingRate')))
 
 try:
 	while (True):

@@ -93,24 +93,39 @@ class NHLTeam:
 			print("Error retrieving Teams from API in NHLTeam.__getTeamsDataFromAPI, exiting method")
 			return
 
-	def populateDatabaseWithTeamsFromAPI():
+	def populateTeamsTableFromAPI(emptyTable=False):
+		teams = NHLTeam.getTeamsFromAPI()
+
+		if (teams != None and len(teams) > 0):
+			if (emptyTable):
+				NHLTeam.emptyTeamsTable()
+
+			connection =	sqlite3.connect("SportsTicker.db")
+			cursor =		connection.cursor()
+
+			for team in teams:
+				try:
+					cursor.execute("INSERT INTO Teams (ID, Name, LocationName, TeamName, ShortName, Abbreviation, FranchiseID, DivisionID, Active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (team.id, team.name, team.locationName, team.teamName, team.shortName, team.abbreviation, team.franchise.id, team.division.id, 1 if team.active else 0))
+				except sqlite3.IntegrityError:
+					print("Record with ID {0} already exists in Teams table".format(team.id))
+				except sqlite3.OperationalError:
+					print("Error inserting record with ID {0} into Teams table".format(team.id))
+
+			connection.commit()
+			connection.close()
+		else:
+			print("No teams returned from NHLTeam.getTeamsFromAPI.")
+
+	def emptyTeamsTable():
 		connection =	sqlite3.connect("SportsTicker.db")
 		cursor =		connection.cursor()
 
 		try:
 			cursor.execute("DELETE FROM Teams")
 		except sqlite3.OperationalError:
-			print("Error executing Teams DELETE query in NHLTeam.populateDatabaseWithTeamsFromAPI, exiting method")
+			print("Error executing Teams DELETE query in NHLTeam.emptyTeamsTable, exiting method")
 			connection.close()
 			return
-
-		teams = NHLTeam.getTeamsFromAPI()
-
-		for team in teams:
-			try:
-				cursor.execute("INSERT INTO Teams (ID, Name, LocationName, TeamName, ShortName, Abbreviation, FranchiseID, DivisionID, Active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (team.id, team.name, team.locationName, team.teamName, team.shortName, team.abbreviation, team.franchise.id, team.division.id, 1 if team.active else 0))
-			except sqlite3.OperationalError:
-				print("Error inserting record with ID {0} into Teams table".format(team.id))
 
 		connection.commit()
 		connection.close()

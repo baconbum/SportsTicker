@@ -81,24 +81,39 @@ class NHLConference:
 			print("Error retrieving Conferences from API in NHLConference.__getConferencesDataFromAPI, exiting method")
 			return
 
-	def populateDatabaseWithConferencesFromAPI():
+	def populateDatabaseWithConferencesFromAPI(emptyTable=False):
+		conferences = NHLConference.getConferencesFromAPI()
+
+		if (conferences != None and len(conferences) > 0):
+			if (emptyTable):
+				NHLConference.emptyConferencesTable()
+
+			connection =	sqlite3.connect("SportsTicker.db")
+			cursor =		connection.cursor()
+
+			for conference in conferences:
+				try:
+					cursor.execute("INSERT INTO Conferences (ID, Name, ShortName, Abbreviation, Active) VALUES (?, ?, ?, ?, ?)", (conference.id, conference.name, conference.shortName, conference.abbreviation, 1 if conference.active else 0))
+				except sqlite3.IntegrityError:
+					print("Record with ID {0} already exists in Conferences table".format(conference.id))
+				except sqlite3.OperationalError:
+					print("Error inserting record with ID {0} into Conferences table".format(conference.id))
+
+			connection.commit()
+			connection.close()
+		else:
+			print("No conferences returned from NHLConference.getConferencesFromAPI.")
+
+	def emptyConferencesTable():
 		connection =	sqlite3.connect("SportsTicker.db")
 		cursor =		connection.cursor()
 
 		try:
 			cursor.execute("DELETE FROM Conferences")
 		except sqlite3.OperationalError:
-			print("Error executing Conferences DELETE query in NHLConference.populateDatabaseWithConferencesFromAPI, exiting method")
+			print("Error executing Conferences DELETE query in NHLConference.emptyConferencesTable, exiting method")
 			connection.close()
 			return
-
-		conferences = NHLConference.getConferencesFromAPI()
-
-		for conference in conferences:
-			try:
-				cursor.execute("INSERT INTO Conferences (ID, Name, ShortName, Abbreviation, Active) VALUES (?, ?, ?, ?, ?)", (conference.id, conference.name, conference.shortName, conference.abbreviation, 1 if conference.active else 0))
-			except sqlite3.OperationalError:
-				print("Error inserting record with ID {0} into Conferences table".format(conference.id))
 
 		connection.commit()
 		connection.close()

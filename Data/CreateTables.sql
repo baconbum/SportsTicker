@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE Conferences(
+CREATE TABLE IF NOT EXISTS Conferences(
 	ID						INTEGER	PRIMARY KEY	NOT NULL,
 	Name					TEXT,
 	ShortName			TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE Conferences(
 	Active				BOOLEAN
 );
 
-CREATE TABLE Divisions(
+CREATE TABLE IF NOT EXISTS Divisions(
 	ID						INTEGER	PRIMARY KEY	NOT NULL,
 	ConferenceID	INTEGER,
 	Name					TEXT,
@@ -17,13 +17,13 @@ CREATE TABLE Divisions(
 	FOREIGN KEY(ConferenceID) REFERENCES Conferences(ID)
 );
 
-CREATE TABLE Franchises(
+CREATE TABLE IF NOT EXISTS Franchises(
 	ID						INTEGER	PRIMARY KEY	NOT NULL,
 	LocationName	TEXT,
 	TeamName			TEXT
 );
 
-CREATE TABLE Teams(
+CREATE TABLE IF NOT EXISTS Teams(
 	ID						INTEGER	PRIMARY KEY	NOT NULL,
 	FranchiseID		INTEGER,
 	DivisionID		INTEGER,
@@ -38,7 +38,7 @@ CREATE TABLE Teams(
 	FOREIGN KEY(DivisionID)		REFERENCES Divisions(ID)
 );
 
-CREATE TABLE ScoringPlays(
+CREATE TABLE IF NOT EXISTS ScoringPlays(
 	ID						INTEGER	PRIMARY KEY	NOT NULL,
 	EventCode			TEXT,
 	APITimeStamp	TEXT,

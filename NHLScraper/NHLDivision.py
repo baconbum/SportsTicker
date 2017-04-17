@@ -84,24 +84,39 @@ class NHLDivision:
 			print("Error retrieving Divisions from API in NHLDivision.__getDivisionsDataFromAPI, exiting method")
 			return
 
-	def populateDatabaseWithDivisionsFromAPI():
+	def populateDivisionsTableFromAPI(emptyTable=False):
+		divisions = NHLDivision.getDivisionsFromAPI()
+
+		if (divisions != None and len(divisions) > 0):
+			if (emptyTable):
+				NHLDivision.emptyDivisionsTable()
+
+			connection =	sqlite3.connect("SportsTicker.db")
+			cursor =		connection.cursor()
+
+			for division in divisions:
+				try:
+					cursor.execute("INSERT INTO Divisions (ID, Name, Abbreviation, ConferenceID, Active) VALUES (?, ?, ?, ?, ?)", (division.id, division.name, division.abbreviation, division.conference.id, 1 if division.active else 0))
+				except sqlite3.IntegrityError:
+					print("Record with ID {0} already exists in Divisions table".format(division.id))
+				except sqlite3.OperationalError:
+					print("Error inserting record with ID {0} into Divisions table".format(division.id))
+
+			connection.commit()
+			connection.close()
+		else:
+			print("No divisions returned from NHLDivision.getDivisionsFromAPI.")
+
+	def emptyDivisionsTable():
 		connection =	sqlite3.connect("SportsTicker.db")
 		cursor =		connection.cursor()
 
 		try:
 			cursor.execute("DELETE FROM Divisions")
 		except sqlite3.OperationalError:
-			print("Error executing Divisions DELETE query in NHLDivision.populateDatabaseWithDivisionsFromAPI, exiting method")
+			print("Error executing Divisions DELETE query in NHLDivision.emptyDivisionsTable, exiting method")
 			connection.close()
 			return
-
-		divisions = NHLDivision.getDivisionsFromAPI()
-
-		for division in divisions:
-			try:
-				cursor.execute("INSERT INTO Divisions (ID, Name, Abbreviation, ConferenceID, Active) VALUES (?, ?, ?, ?, ?)", (division.id, division.name, division.abbreviation, division.conference.id, 1 if division.active else 0))
-			except sqlite3.OperationalError:
-				print("Error inserting record with ID {0} into Divisions table".format(division.id))
 
 		connection.commit()
 		connection.close()

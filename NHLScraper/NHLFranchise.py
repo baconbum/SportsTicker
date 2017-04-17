@@ -77,24 +77,39 @@ class NHLFranchise:
 			print("Error retrieving Franchises from API in NHLFranchise.__getFranchisesDataFromAPI, exiting method")
 			return
 
-	def populateDatabaseWithFranchisesFromAPI():
+	def populateFranchisesTableFromAPI(emptyTable=False):
+		franchises = NHLFranchise.getFranchisesFromAPI()
+
+		if (franchises != None and len(franchises) > 0):
+			if (emptyTable):
+				NHLFranchise.emptyFranchisesTable()
+
+			connection =	sqlite3.connect("SportsTicker.db")
+			cursor =		connection.cursor()
+
+			for franchise in franchises:
+				try:
+					cursor.execute("INSERT INTO Franchises (ID, TeamName, LocationName) VALUES (?, ?, ?)", (franchise.id, franchise.teamName, franchise.locationName))
+				except sqlite3.IntegrityError:
+					print("Record with ID {0} already exists in Franchises table".format(franchise.id))
+				except sqlite3.OperationalError:
+					print("Error inserting record with ID {0} into Franchises table".format(franchise.id))
+
+			connection.commit()
+			connection.close()
+		else:
+			print("No franchises returned from NHLFranchise.getFranchisesFromAPI.")
+
+	def emptyFranchisesTable():
 		connection =	sqlite3.connect("SportsTicker.db")
 		cursor =		connection.cursor()
 
 		try:
 			cursor.execute("DELETE FROM Franchises")
 		except sqlite3.OperationalError:
-			print("Error executing Franchises DELETE query in NHLFranchise.populateDatabaseWithFranchisesFromAPI, exiting method")
+			print("Error executing Franchises DELETE query in NHLFranchise.emptyFranchisesTable, exiting method")
 			connection.close()
 			return
-
-		franchises = NHLFranchise.getFranchisesFromAPI()
-
-		for franchise in franchises:
-			try:
-				cursor.execute("INSERT INTO Franchises (ID, TeamName, LocationName) VALUES (?, ?, ?)", (franchise.id, franchise.teamName, franchise.locationName))
-			except sqlite3.OperationalError:
-				print("Error inserting record with ID {0} into Franchise table".format(franchise.id))
 
 		connection.commit()
 		connection.close()

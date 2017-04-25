@@ -34,9 +34,9 @@ class NHLTeam:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("SELECT ID, Name, LocationName, TeamName, ShortName, Abbreviation, FranchiseID, DivisionID, Active FROM Teams WHERE ID=?", (id,))
+			cursor.execute("SELECT ID, Name, LocationName, TeamName, ShortName, Abbreviation, FranchiseID, DivisionID, Active FROM NHLTeams WHERE ID=?", (id,))
 		except sqlite3.OperationalError:
-			print("Error executing Teams SELECT query in NHLTeam.__constructTeamFromDatabase, exiting method")
+			print("Error executing NHLTeams SELECT query in NHLTeam.__constructTeamFromDatabase, exiting method")
 			connection.close()
 			return
 
@@ -53,7 +53,7 @@ class NHLTeam:
 			self.division =		NHLDivision(idForDatabase=row[7])
 			self.active =		row[8] != 0
 		else:
-			print("No Teams exist in the database with ID {0}".format(id))
+			print("No records exist in NHLTeams with ID {0}".format(id))
 
 		connection.close()
 
@@ -63,7 +63,7 @@ class NHLTeam:
 		if (teamsData!= None and len(teamsData) > 0):
 			self.__constructTeamFromJSON(teamsData[0])
 		else:
-			print("No Teams exist in the API with ID {0}".format(id))
+			print("No NHL Team exists in the API with ID {0}".format(id))
 
 	def getTeamsFromAPI(idFilter=None):
 		teamsData = NHLTeam.__getTeamsDataFromAPI(idFilter)
@@ -90,7 +90,7 @@ class NHLTeam:
 		if ("teams" in data):
 			return data["teams"]
 		else:
-			print("Error retrieving Teams from API in NHLTeam.__getTeamsDataFromAPI, exiting method")
+			print("Error retrieving NHL Teams from API in NHLTeam.__getTeamsDataFromAPI, exiting method")
 			return
 
 	def populateTeamsTableFromAPI(emptyTable=False):
@@ -105,11 +105,11 @@ class NHLTeam:
 
 			for team in teams:
 				try:
-					cursor.execute("INSERT INTO Teams (ID, Name, LocationName, TeamName, ShortName, Abbreviation, FranchiseID, DivisionID, Active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (team.id, team.name, team.locationName, team.teamName, team.shortName, team.abbreviation, team.franchise.id, team.division.id, 1 if team.active else 0))
+					cursor.execute("INSERT INTO NHLTeams (ID, Name, LocationName, TeamName, ShortName, Abbreviation, FranchiseID, DivisionID, Active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (team.id, team.name, team.locationName, team.teamName, team.shortName, team.abbreviation, team.franchise.id, team.division.id, 1 if team.active else 0))
 				except sqlite3.IntegrityError:
-					print("Record with ID {0} already exists in Teams table".format(team.id))
+					print("Record with ID {0} already exists in NHLTeams table".format(team.id))
 				except sqlite3.OperationalError:
-					print("Error inserting record with ID {0} into Teams table".format(team.id))
+					print("Error inserting record with ID {0} into NHLTeams table".format(team.id))
 
 			connection.commit()
 			connection.close()
@@ -121,9 +121,9 @@ class NHLTeam:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("DELETE FROM Teams")
+			cursor.execute("DELETE FROM NHLTeams")
 		except sqlite3.OperationalError:
-			print("Error executing Teams DELETE query in NHLTeam.emptyTeamsTable, exiting method")
+			print("Error executing NHLTeams DELETE query in NHLTeam.emptyTeamsTable, exiting method")
 			connection.close()
 			return
 

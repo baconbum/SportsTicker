@@ -53,9 +53,9 @@ class NHLScoringPlay:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("SELECT ID, EventCode, APITimeStamp, Displayed FROM ScoringPlays WHERE EventCode=? AND Displayed=1", (self.eventCode,))
+			cursor.execute("SELECT ID, EventCode, APITimeStamp, Displayed FROM NHLScoringPlays WHERE EventCode=? AND Displayed=1", (self.eventCode,))
 		except sqlite3.OperationalError:
-			print("Error executing ScoringPlays SELECT query in NHLScoringPlay.alreadyDisplayed, exiting method")
+			print("Error executing NHLScoringPlays SELECT query in NHLScoringPlay.alreadyDisplayed, exiting method")
 			connection.close()
 			return
 
@@ -72,9 +72,9 @@ class NHLScoringPlay:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("INSERT INTO ScoringPlays (EventCode, APITimeStamp, Displayed) VALUES (?, ?, ?)", (self.eventCode, self.timeStamp, 1))
+			cursor.execute("INSERT INTO NHLScoringPlays (EventCode, APITimeStamp, Displayed) VALUES (?, ?, ?)", (self.eventCode, self.timeStamp, 1))
 		except sqlite3.OperationalError:
-			print("Error inserting record with EventCode {0} into ScoringPlays table".format(self.EventCode))
+			print("Error inserting record with EventCode {0} into NHLScoringPlays table".format(self.EventCode))
 
 		connection.commit()
 		connection.close()

@@ -28,9 +28,9 @@ class NHLConference:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("SELECT ID, Name, ShortName, Abbreviation, Active FROM Conferences WHERE ID=?", (id,))
+			cursor.execute("SELECT ID, Name, ShortName, Abbreviation, Active FROM NHLConferences WHERE ID=?", (id,))
 		except sqlite3.OperationalError:
-			print("Error executing Conferences SELECT query in NHLConference.__constructConferenceFromDatabase, exiting method")
+			print("Error executing NHLConferences SELECT query in NHLConference.__constructConferenceFromDatabase, exiting method")
 			connection.close()
 			return
 
@@ -43,7 +43,7 @@ class NHLConference:
 			self.abbreviation =	row[3]
 			self.active =		row[4] != 0
 		else:
-			print("No Conferences exist in the database with ID {0}".format(id))
+			print("No records exist in NHLConferences with ID {0}".format(id))
 
 		connection.close()
 
@@ -53,7 +53,7 @@ class NHLConference:
 		if (conferencesData!= None and len(conferencesData) > 0):
 			self.__constructConferenceFromJSON(conferencesData[0])
 		else:
-			print("No Conferences exist in the API with ID {0}".format(id))
+			print("No NHL Conference exists in the API with ID {0}".format(id))
 
 	def getConferencesFromAPI(idFilter=None):
 		conferencesData = NHLConference.__getConferencesDataFromAPI(idFilter)
@@ -78,7 +78,7 @@ class NHLConference:
 		if ("conferences" in data):
 			return data["conferences"]
 		else:
-			print("Error retrieving Conferences from API in NHLConference.__getConferencesDataFromAPI, exiting method")
+			print("Error retrieving NHL Conferences from API in NHLConference.__getConferencesDataFromAPI, exiting method")
 			return
 
 	def populateConferencesTableFromAPI(emptyTable=False):
@@ -93,11 +93,11 @@ class NHLConference:
 
 			for conference in conferences:
 				try:
-					cursor.execute("INSERT INTO Conferences (ID, Name, ShortName, Abbreviation, Active) VALUES (?, ?, ?, ?, ?)", (conference.id, conference.name, conference.shortName, conference.abbreviation, 1 if conference.active else 0))
+					cursor.execute("INSERT INTO NHLConferences (ID, Name, ShortName, Abbreviation, Active) VALUES (?, ?, ?, ?, ?)", (conference.id, conference.name, conference.shortName, conference.abbreviation, 1 if conference.active else 0))
 				except sqlite3.IntegrityError:
-					print("Record with ID {0} already exists in Conferences table".format(conference.id))
+					print("Record with ID {0} already exists in NHLConferences table".format(conference.id))
 				except sqlite3.OperationalError:
-					print("Error inserting record with ID {0} into Conferences table".format(conference.id))
+					print("Error inserting record with ID {0} into NHLConferences table".format(conference.id))
 
 			connection.commit()
 			connection.close()
@@ -109,9 +109,9 @@ class NHLConference:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("DELETE FROM Conferences")
+			cursor.execute("DELETE FROM NHLConferences")
 		except sqlite3.OperationalError:
-			print("Error executing Conferences DELETE query in NHLConference.emptyConferencesTable, exiting method")
+			print("Error executing NHLConferences DELETE query in NHLConference.emptyConferencesTable, exiting method")
 			connection.close()
 			return
 

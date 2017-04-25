@@ -29,9 +29,9 @@ class NHLDivision:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("SELECT ID, Name, Abbreviation, ConferenceID, Active FROM Divisions WHERE ID=?", (id,))
+			cursor.execute("SELECT ID, Name, Abbreviation, ConferenceID, Active FROM NHLDivisions WHERE ID=?", (id,))
 		except sqlite3.OperationalError:
-			print("Error executing Divisions SELECT query in NHLDivision.__constructDivisionFromDatabase, exiting method")
+			print("Error executing NHLDivisions SELECT query in NHLDivision.__constructDivisionFromDatabase, exiting method")
 			connection.close()
 			return
 
@@ -44,7 +44,7 @@ class NHLDivision:
 			self.conference =	NHLConference(idForDatabase=row[3])
 			self.active =		row[4] != 0
 		else:
-			print("No Divisions exist in the database with ID {0}".format(id))
+			print("No records exist in NHLDivisions with ID {0}".format(id))
 
 		connection.close()
 
@@ -54,7 +54,7 @@ class NHLDivision:
 		if (divisionsData!= None and len(divisionsData) > 0):
 			self.__constructDivisionFromJSON(divisionsData[0])
 		else:
-			print("No Divisions exist in the API with ID {0}".format(id))
+			print("No NHL Division exists in the API with ID {0}".format(id))
 
 	def getDivisionsFromAPI(idFilter=None):
 		divisionsData = NHLDivision.__getDivisionsDataFromAPI(idFilter)
@@ -81,7 +81,7 @@ class NHLDivision:
 		if ("divisions" in data):
 			return data["divisions"]
 		else:
-			print("Error retrieving Divisions from API in NHLDivision.__getDivisionsDataFromAPI, exiting method")
+			print("Error retrieving NHL Divisions from API in NHLDivision.__getDivisionsDataFromAPI, exiting method")
 			return
 
 	def populateDivisionsTableFromAPI(emptyTable=False):
@@ -96,11 +96,11 @@ class NHLDivision:
 
 			for division in divisions:
 				try:
-					cursor.execute("INSERT INTO Divisions (ID, Name, Abbreviation, ConferenceID, Active) VALUES (?, ?, ?, ?, ?)", (division.id, division.name, division.abbreviation, division.conference.id, 1 if division.active else 0))
+					cursor.execute("INSERT INTO NHLDivisions (ID, Name, Abbreviation, ConferenceID, Active) VALUES (?, ?, ?, ?, ?)", (division.id, division.name, division.abbreviation, division.conference.id, 1 if division.active else 0))
 				except sqlite3.IntegrityError:
-					print("Record with ID {0} already exists in Divisions table".format(division.id))
+					print("Record with ID {0} already exists in NHLDivisions table".format(division.id))
 				except sqlite3.OperationalError:
-					print("Error inserting record with ID {0} into Divisions table".format(division.id))
+					print("Error inserting record with ID {0} into NHLDivisions table".format(division.id))
 
 			connection.commit()
 			connection.close()
@@ -112,9 +112,9 @@ class NHLDivision:
 		cursor =		connection.cursor()
 
 		try:
-			cursor.execute("DELETE FROM Divisions")
+			cursor.execute("DELETE FROM NHLDivisions")
 		except sqlite3.OperationalError:
-			print("Error executing Divisions DELETE query in NHLDivision.emptyDivisionsTable, exiting method")
+			print("Error executing NHLDivisions DELETE query in NHLDivision.emptyDivisionsTable, exiting method")
 			connection.close()
 			return
 

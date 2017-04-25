@@ -1,7 +1,7 @@
 # SportsTicker
 
 ## About
-This Raspberry Pi + Python 3 project is meant to alert users to updates in sports scores. It uses several LEDs and an LCD connected to a Raspberry Pi to display relevant information.
+This project is meant to alert users to updates in sports scores. It uses several LEDs and an LCD connected to a Raspberry Pi running a Python 3 script to display relevant information.
 
 Currently supports NHL score updates using the nhl.com REST API.
 

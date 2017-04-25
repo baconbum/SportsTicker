@@ -5,7 +5,7 @@ from NHLScraper.NHLDivision import NHLDivision
 from NHLScraper.NHLFranchise import NHLFranchise
 from NHLScraper.NHLTeam import NHLTeam
 
-def initializeDatabases():
+def initializeDatabase():
 
 	connection =	sqlite3.connect("SportsTicker.db")
 	cursor =		connection.cursor()
@@ -28,4 +28,4 @@ def initializeDatabases():
 	NHLFranchise.populateFranchisesTableFromAPI()
 	NHLTeam.populateTeamsTableFromAPI()
 
-initializeDatabases()
+initializeDatabase()

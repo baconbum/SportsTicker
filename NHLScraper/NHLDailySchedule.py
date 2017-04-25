@@ -18,7 +18,10 @@ class NHLDailySchedule:
 		response = requests.get(scheduleUrl.format(self.date.strftime("%Y-%m-%d")))
 		data = response.json()
 
-		for gameData in data["dates"][0]["games"]:
-			gamesList.append(NHLGame(gameData))
+		if (len(data["dates"]) > 0):
+			for gameData in data["dates"][0]["games"]:
+				gamesList.append(NHLGame(gameData))
+		else:
+			print ("No NHL games scheduled for {0}.".format(self.date.strftime("%Y-%m-%d")))
 
 		return gamesList

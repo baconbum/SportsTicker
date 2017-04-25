@@ -81,7 +81,7 @@ class NHLConference:
 			print("Error retrieving Conferences from API in NHLConference.__getConferencesDataFromAPI, exiting method")
 			return
 
-	def populateDatabaseWithConferencesFromAPI(emptyTable=False):
+	def populateConferencesTableFromAPI(emptyTable=False):
 		conferences = NHLConference.getConferencesFromAPI()
 
 		if (conferences != None and len(conferences) > 0):

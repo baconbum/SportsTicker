@@ -6,6 +6,7 @@ from multiprocessing import Process
 from collections import namedtuple
 from .LightEmittingDiode import LightEmittingDiode
 from .LiquidCrystalDisplay import LiquidCrystalDisplay
+from .Button import Button
 
 class SportsTicker():
 
@@ -86,7 +87,7 @@ class SportsTicker():
 		PatternSegment(duration=0.2,	lights=[])
 	]
 
-	def __init__(self, ledPinNumbers, lcdPinRS, lcdPinRW, lcdPinE, lcdPinData, lcdPinBacklight = None):
+	def __init__(self, ledPinNumbers, lcdPinRS, lcdPinRW, lcdPinE, lcdPinData, lcdPinBacklight, nhlScheduleButtonPin):
 
 		self.ledCollection = list()
 
@@ -94,6 +95,8 @@ class SportsTicker():
 			self.ledCollection.append(LightEmittingDiode(pinNumber))
 
 		self.lcd = LiquidCrystalDisplay(pin_rs=lcdPinRS, pin_rw=lcdPinRW, pin_e=lcdPinE, pins_data=lcdPinData, pin_backlight=lcdPinBacklight)
+
+		self.nhlScheduleButton = Button(nhlScheduleButtonPin)
 
 	def displayNotification(self, lineOne, lineTwo, ledPattern=LED_PATTERN_SIMULTANEOUS, ledPatternRepeat=3):
 

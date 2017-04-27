@@ -27,7 +27,8 @@ sportsTicker = SportsTicker(
 		int(config.get('lcdPins', 'LCD_DATA_THREE')),
 		int(config.get('lcdPins', 'LCD_DATA_FOUR'))
 	],
-	lcdPinBacklight =	int(config.get('lcdPins', 'LCD_BACKLIGHT'))
+	lcdPinBacklight =			int(config.get('lcdPins', 'LCD_BACKLIGHT')),
+	nhlScheduleButtonPin =		33
 )
 
 localTimeZone = pytz.timezone(config.get('miscellaneous', 'timezone'))
@@ -59,11 +60,16 @@ def mainLoop():
 			else:
 				print("Scoring play {0} has already been displayed, skipping.".format(scoringPlay.eventCode))
 
-	time.sleep(int(config.get('miscellaneous', 'apiPollingRate')))
-
 try:
 	while (True):
+		sportsTicker.nhlScheduleButton.deactivate()
+
 		mainLoop()
+
+		sportsTicker.nhlScheduleButton.activate()
+
+		time.sleep(int(config.get('miscellaneous', 'apiPollingRate')))
+
 except (KeyboardInterrupt, SystemExit):
 	print("Exiting program")
 finally:

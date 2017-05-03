@@ -28,7 +28,7 @@ sportsTicker = SportsTicker(
 		int(config.get('lcdPins', 'LCD_DATA_FOUR'))
 	],
 	lcdPinBacklight =			int(config.get('lcdPins', 'LCD_BACKLIGHT')),
-	nhlScheduleButtonPin =		33
+	nhlScheduleButtonPin =		int(config.get('dailySchedulePins', 'NHL_DAILY_SCHEDULE_PIN'))
 )
 
 localTimeZone = pytz.timezone(config.get('miscellaneous', 'timezone'))

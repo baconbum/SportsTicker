@@ -104,7 +104,7 @@ class SportsTicker():
 
 		self.nhlScheduleButton = Button(nhlScheduleButtonPin, self.displayDailyNHLSchedule)
 
-		self.displayLiveScoringUpdates = True
+		self.enableLiveScoringUpdates = True
 
 		self.localTimeZone =	pytz.timezone(config.get('miscellaneous', 'timezone'))
 		self.scheduleDate =		None
@@ -163,6 +163,16 @@ class SportsTicker():
 		for led in self.ledCollection:
 			led.printStatus()
 
+	def displayAllLiveScoringPlays(self):
+		if self.enableLiveScoringUpdates:
+			self.deactivateAllScheduleButtons()
+
+			self.displayLiveNHLScoringPlays()
+
+			self.activateAllScheduleButtons()
+		else:
+			print ("Skipping live scoring updates for this cycle.")
+
 	def displayLiveNHLScoringPlays(self):
 		config = ConfigParser(allow_no_value=True)
 		config.read('config.ini')
@@ -192,7 +202,9 @@ class SportsTicker():
 					print("Scoring play {0} has already been displayed, skipping.".format(scoringPlay.eventCode))
 
 	def displayDailyNHLSchedule(self, *kwargs):
-		self.displayLiveScoringUpdates = False
+		self.deactivateAllScheduleButtons()
+
+		self.enableLiveScoringUpdates = False
 
 		self.updateScheduleDate()
 
@@ -205,7 +217,9 @@ class SportsTicker():
 
 			self.displayNotification(lineOne=gameStatusOutput[0], lineTwo=gameStatusOutput[1], ledPatternRepeat=0)
 
-		self.displayLiveScoringUpdates = True
+		self.enableLiveScoringUpdates = True
+
+		self.activateAllScheduleButtons()
 
 	def updateScheduleDate(self):
 		config = ConfigParser(allow_no_value=True)
@@ -214,3 +228,9 @@ class SportsTicker():
 		self.scheduleDate = datetime.datetime.now(datetime.timezone.utc).astimezone(self.localTimeZone)
 		#self.scheduleDate = datetime.datetime(2017, 4, 15, 23, 59, 59) #Testing date only
 		self.scheduleDate = self.scheduleDate - datetime.timedelta(hours=int(config.get('miscellaneous', 'dateRolloverOffset')))
+
+	def deactivateAllScheduleButtons(self):
+		self.nhlScheduleButton.deactivate()
+
+	def activateAllScheduleButtons(self):
+		self.nhlScheduleButton.activate()

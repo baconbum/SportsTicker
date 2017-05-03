@@ -31,14 +31,7 @@ sportsTicker = SportsTicker(
 
 try:
 	while (True):
-		sportsTicker.nhlScheduleButton.deactivate()
-
-		if sportsTicker.displayLiveScoringUpdates:
-			sportsTicker.displayLiveNHLScoringPlays()
-		else:
-			print ("Skipping live scoring updates for this cycle.")
-
-		sportsTicker.nhlScheduleButton.activate()
+		sportsTicker.displayAllLiveScoringPlays()
 
 		time.sleep(int(config.get('miscellaneous', 'apiPollingRate')))
 

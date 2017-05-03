@@ -182,24 +182,33 @@ class SportsTicker():
 		# Get the NHLDailySchedule object that contains all of the scoring data for the day
 		nhlDailySchedule = NHLDailySchedule(self.scheduleDate.date())
 
-		# Loop through all games in the day
-		for game in nhlDailySchedule.games:
-			# Loop through all of the scoring plays in the game
-			for index, scoringPlay in enumerate(game.scoringPlays):
-				# Ensure scoring play should be displayed
-				if (not scoringPlay.alreadyDisplayed()):
-					if (not scoringPlay.isPastMaximumAge()):
-						# Output the scoring play information to the SportsTicker
-						scoringPlayOutput = game.getScoringPlayOutput(index)
+		if (len(nhlDailySchedule.games) > 0):
+			scoringPlayCount = 0
 
-						self.displayNotification(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPattern=SportsTicker.LED_PATTERN_AWESOME, ledPatternRepeat=1)
-						self.displayNotification(lineOne=scoringPlayOutput[2], lineTwo=scoringPlayOutput[3], ledPatternRepeat=0)
+			# Loop through all games in the day
+			for game in nhlDailySchedule.games:
+				# Loop through all of the scoring plays in the game
+				for index, scoringPlay in enumerate(game.scoringPlays):
+					# Increment scoring play counter
+					scoringPlayCount += 1
 
-						scoringPlay.markAsDisplayed()
+					# Ensure scoring play should be displayed
+					if (not scoringPlay.alreadyDisplayed()):
+						if (not scoringPlay.isPastMaximumAge()):
+							# Output the scoring play information to the SportsTicker
+							scoringPlayOutput = game.getScoringPlayOutput(index)
+
+							self.displayNotification(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPattern=SportsTicker.LED_PATTERN_AWESOME, ledPatternRepeat=1)
+							self.displayNotification(lineOne=scoringPlayOutput[2], lineTwo=scoringPlayOutput[3], ledPatternRepeat=0)
+
+							scoringPlay.markAsDisplayed()
+						else:
+							print("Scoring play {0} is more than {1} minute(s) old, skipping.".format(scoringPlay.eventCode, config.get('miscellaneous', 'maximumGoalAgeForDisplay')))
 					else:
-						print("Scoring play {0} is more than {1} minute(s) old, skipping.".format(scoringPlay.eventCode, config.get('miscellaneous', 'maximumGoalAgeForDisplay')))
-				else:
-					print("Scoring play {0} has already been displayed, skipping.".format(scoringPlay.eventCode))
+						print("Scoring play {0} has already been displayed, skipping.".format(scoringPlay.eventCode))
+
+			if (scoringPlayCount == 0):
+				print ("No NHL scoring plays to report yet.")
 
 	def displayDailyNHLSchedule(self, *kwargs):
 		self.deactivateAllScheduleButtons()

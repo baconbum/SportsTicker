@@ -87,7 +87,7 @@ class SportsTicker():
 		PatternSegment(duration=0.2,	lights=[])
 	]
 
-	def __init__(self, ledPinNumbers, lcdPinRS, lcdPinRW, lcdPinE, lcdPinData, lcdPinBacklight, nhlScheduleButtonPin):
+	def __init__(self, ledPinNumbers, lcdPinRS, lcdPinRW, lcdPinE, lcdPinData, lcdPinBacklight, nhlScheduleButtonPin, nhlScheduleButtonAction=None):
 
 		self.ledCollection = list()
 
@@ -96,7 +96,7 @@ class SportsTicker():
 
 		self.lcd = LiquidCrystalDisplay(pin_rs=lcdPinRS, pin_rw=lcdPinRW, pin_e=lcdPinE, pins_data=lcdPinData, pin_backlight=lcdPinBacklight)
 
-		self.nhlScheduleButton = Button(nhlScheduleButtonPin)
+		self.nhlScheduleButton = Button(nhlScheduleButtonPin, nhlScheduleButtonAction)
 
 	def displayNotification(self, lineOne, lineTwo, ledPattern=LED_PATTERN_SIMULTANEOUS, ledPatternRepeat=3):
 

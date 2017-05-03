@@ -33,7 +33,9 @@ sportsTicker = SportsTicker(
 
 localTimeZone = pytz.timezone(config.get('miscellaneous', 'timezone'))
 
-def mainLoop():
+displayLiveScoringUpdates = True
+
+def displayLiveNHLScoringPlays():
 	scheduleDate = datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone)
 	#scheduleDate = datetime.datetime(2017, 4, 15, 23, 59, 59) #Testing date only
 	scheduleDate = scheduleDate - datetime.timedelta(hours=int(config.get('miscellaneous', 'dateRolloverOffset')))
@@ -60,11 +62,36 @@ def mainLoop():
 			else:
 				print("Scoring play {0} has already been displayed, skipping.".format(scoringPlay.eventCode))
 
+def displayDailyNHLSchedule(*kwargs):
+	global displayLiveScoringUpdates
+
+	displayLiveScoringUpdates = False
+
+	scheduleDate = datetime.datetime.now(datetime.timezone.utc).astimezone(localTimeZone)
+	#scheduleDate = datetime.datetime(2017, 4, 15, 23, 59, 59) #Testing date only
+	scheduleDate = scheduleDate - datetime.timedelta(hours=int(config.get('miscellaneous', 'dateRolloverOffset')))
+
+	# Get the NHLDailySchedule object that contains all of the scoring data for the day
+	dailySchedule = NHLDailySchedule(scheduleDate.date())
+
+	# Loop through all games in the day
+	for game in dailySchedule.games:
+		gameStatusOutput = game.getGameStatusOutput()
+
+		sportsTicker.displayNotification(lineOne=gameStatusOutput[0], lineTwo=gameStatusOutput[1], ledPatternRepeat=0)
+
+	displayLiveScoringUpdates = True
+
+sportsTicker.nhlScheduleButton.setAction(displayDailyNHLSchedule)
+
 try:
 	while (True):
 		sportsTicker.nhlScheduleButton.deactivate()
 
-		mainLoop()
+		if displayLiveScoringUpdates:
+			displayLiveNHLScoringPlays()
+		else:
+			print ("Skipping live scoring updates for this cycle.")
 
 		sportsTicker.nhlScheduleButton.activate()
 

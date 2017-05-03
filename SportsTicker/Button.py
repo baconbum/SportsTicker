@@ -8,21 +8,27 @@ class Button:
 	def __init__(self, pinNumber, actionOverride=None):
 		GPIO.setmode(GPIO.BOARD)
 		GPIO.setup(pinNumber, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.add_event_detect(pinNumber, GPIO.RISING, self.action, 200)
 
 		self.pinNumber =	pinNumber
+		self.__enabled =	True
 
 		if (actionOverride != None):
 			# Override action method
-			self.action =	actionOverride
+			self.__action =	actionOverride
 
 	def activate(self):
-		GPIO.add_event_detect(self.pinNumber, GPIO.RISING, self.action, 200)
+		self.__enabled =	True
 
 	def deactivate(self):
-		GPIO.remove_event_detect(self.pinNumber)
+		self.__enabled =	False
 
-	def action(self, channel):
+	def action(self, *kwargs):
+		if (self.__enabled):
+			self.__action(kwargs)
+
+	def __action(self, channel, *kwargs):
 		print ("Button on channel {0} pressed!".format(channel))
 
 	def setAction(self, actionOverride):
-		self.action =	actionOverride
+		self.__action =	actionOverride

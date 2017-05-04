@@ -23,11 +23,11 @@ class Button:
 	def deactivate(self):
 		self.__enabled =	False
 
-	def action(self, *kwargs):
+	def action(self, channel):
 		if (self.__enabled):
-			self.__action(kwargs)
+			self.__action(channel)
 
-	def __action(self, channel, *kwargs):
+	def __action(self, channel):
 		print ("Button on channel {0} pressed!".format(channel))
 
 	def setAction(self, actionOverride):

@@ -29,9 +29,9 @@ class LiquidCrystalDisplay(CharLCD):
 			state = not self.backlight_enabled
 
 		if (state):
-			print("Turning backlight on")
+			print("Turning LCD backlight on")
 		else:
-			print("Turning backlight off")
+			print("Turning LCD backlight off")
 
 		self.backlight_enabled = state
 

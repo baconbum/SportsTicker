@@ -35,11 +35,6 @@ class LiquidCrystalDisplay(CharLCD):
 
 		self.backlight_enabled = state
 
-		if (self.backlight_enabled):
-			print("Backlight turned on")
-		else:
-			print("Backlight turned off")
-
 	def displayText(self, text, duration=5):
 		if (text == None):
 			print ("Warning (LiquidCrystalDisplay.displayText): Text parameter is empty")

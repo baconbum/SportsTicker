@@ -1,7 +1,7 @@
 # SportsTicker
 
 ## About
-This project is meant to alert users to updates in sports scores. It uses several LEDs and an LCD connected to a Raspberry Pi running a Python 3 script to display relevant information.
+This project alerts users to live scoring play updates, as well as allow users to see the full daily schedule of the supported leagues. Full daily schedule includes current scores, time remaining in game, and (if the game is not yet started) start time. It uses several LEDs, an LCD, and a button connected to a Raspberry Pi running a Python 3 script to display relevant information.
 
 Currently supports NHL score updates using the nhl.com REST API.
 
@@ -14,7 +14,7 @@ Currently supports NHL score updates using the nhl.com REST API.
 4. Download SportsTicker package from GitHub onto your Pi.
 5. Run prerequisites script: `sudo bash installPrerequisites.sh`
 6. Initialize database: `python3 initializeDatabase.py`
-7. Connect 4 LEDs and 1 LCD to your Pi.
+7. Connect 4 LEDs, 1 LCD and 1 button to your Pi.
     * Coming later: Picture tutorial of connecting hardware to Pi.
 8. Customize config.ini to fit your setup.
 9. Run main script to constantly check scores: `python3 main.py`

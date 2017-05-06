@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
+from configparser import ConfigParser
 import time
+import datetime, pytz
 import warnings
 from multiprocessing import Process
 from collections import namedtuple
 from .LightEmittingDiode import LightEmittingDiode
 from .LiquidCrystalDisplay import LiquidCrystalDisplay
+from .Button import Button
+from NHLScraper.NHLDailySchedule import NHLDailySchedule
 
 class SportsTicker():
 
@@ -86,7 +90,10 @@ class SportsTicker():
 		PatternSegment(duration=0.2,	lights=[])
 	]
 
-	def __init__(self, ledPinNumbers, lcdPinRS, lcdPinRW, lcdPinE, lcdPinData, lcdPinBacklight = None):
+	def __init__(self, ledPinNumbers, lcdPinRS, lcdPinRW, lcdPinE, lcdPinData, lcdPinBacklight, nhlScheduleButtonPin):
+
+		config = ConfigParser(allow_no_value=True)
+		config.read('config.ini')
 
 		self.ledCollection = list()
 
@@ -94,6 +101,15 @@ class SportsTicker():
 			self.ledCollection.append(LightEmittingDiode(pinNumber))
 
 		self.lcd = LiquidCrystalDisplay(pin_rs=lcdPinRS, pin_rw=lcdPinRW, pin_e=lcdPinE, pins_data=lcdPinData, pin_backlight=lcdPinBacklight)
+
+		self.nhlScheduleButton = Button(nhlScheduleButtonPin, self.displayDailyNHLSchedule)
+
+		self.enableLiveScoringUpdates = True
+
+		self.localTimeZone =	pytz.timezone(config.get('miscellaneous', 'timezone'))
+		self.scheduleDate =		None
+
+		self.updateScheduleDate()
 
 	def displayNotification(self, lineOne, lineTwo, ledPattern=LED_PATTERN_SIMULTANEOUS, ledPatternRepeat=3):
 
@@ -146,3 +162,84 @@ class SportsTicker():
 	def printLEDStatus(self):
 		for led in self.ledCollection:
 			led.printStatus()
+
+	def displayAllLiveScoringPlays(self):
+		if self.enableLiveScoringUpdates:
+			self.deactivateAllScheduleButtons()
+
+			self.displayLiveNHLScoringPlays()
+
+			self.activateAllScheduleButtons()
+		else:
+			print ("Skipping live scoring updates for this cycle.")
+
+	def displayLiveNHLScoringPlays(self):
+		config = ConfigParser(allow_no_value=True)
+		config.read('config.ini')
+
+		self.updateScheduleDate()
+
+		# Get the NHLDailySchedule object that contains all of the scoring data for the day
+		nhlDailySchedule = NHLDailySchedule(self.scheduleDate.date())
+
+		if (len(nhlDailySchedule.games) > 0):
+			scoringPlayCount = 0
+
+			# Loop through all games in the day
+			for game in nhlDailySchedule.games:
+				# Loop through all of the scoring plays in the game
+				for index, scoringPlay in enumerate(game.scoringPlays):
+					# Increment scoring play counter
+					scoringPlayCount += 1
+
+					# Ensure scoring play should be displayed
+					if (not scoringPlay.alreadyDisplayed()):
+						if (not scoringPlay.isPastMaximumAge()):
+							# Output the scoring play information to the SportsTicker
+							scoringPlayOutput = game.getScoringPlayOutput(index)
+
+							self.displayNotification(lineOne=scoringPlayOutput[0], lineTwo=scoringPlayOutput[1], ledPattern=SportsTicker.LED_PATTERN_AWESOME, ledPatternRepeat=1)
+							self.displayNotification(lineOne=scoringPlayOutput[2], lineTwo=scoringPlayOutput[3], ledPatternRepeat=0)
+
+							scoringPlay.markAsDisplayed()
+						else:
+							print("Scoring play {0} is more than {1} minute(s) old, skipping.".format(scoringPlay.eventCode, config.get('miscellaneous', 'maximumGoalAgeForDisplay')))
+					else:
+						print("Scoring play {0} has already been displayed, skipping.".format(scoringPlay.eventCode))
+
+			if (scoringPlayCount == 0):
+				print ("No NHL scoring plays to report yet.")
+
+	def displayDailyNHLSchedule(self, *kwargs):
+		self.deactivateAllScheduleButtons()
+
+		self.enableLiveScoringUpdates = False
+
+		self.updateScheduleDate()
+
+		# Get the NHLDailySchedule object that contains all of the scoring data for the day
+		nhlDailySchedule = NHLDailySchedule(self.scheduleDate.date())
+
+		# Loop through all games in the day
+		for game in nhlDailySchedule.games:
+			gameStatusOutput = game.getGameStatusOutput()
+
+			self.displayNotification(lineOne=gameStatusOutput[0], lineTwo=gameStatusOutput[1], ledPatternRepeat=0)
+
+		self.enableLiveScoringUpdates = True
+
+		self.activateAllScheduleButtons()
+
+	def updateScheduleDate(self):
+		config = ConfigParser(allow_no_value=True)
+		config.read('config.ini')
+
+		self.scheduleDate = datetime.datetime.now(datetime.timezone.utc).astimezone(self.localTimeZone)
+		#self.scheduleDate = datetime.datetime(2017, 4, 15, 23, 59, 59) #Testing date only
+		self.scheduleDate = self.scheduleDate - datetime.timedelta(hours=int(config.get('miscellaneous', 'dateRolloverOffset')))
+
+	def deactivateAllScheduleButtons(self):
+		self.nhlScheduleButton.deactivate()
+
+	def activateAllScheduleButtons(self):
+		self.nhlScheduleButton.activate()

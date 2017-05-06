@@ -29,4 +29,4 @@ class LightEmittingDiode:
 			GPIO.output(self.pinNumber, GPIO.LOW)
 
 	def printStatus(self):
-		print('Pin %d is set to %s' % (self.pinNumber, self.state))
+		print("LED pin {0} is set to {1}".format(self.pinNumber, self.state))

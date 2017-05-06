@@ -14,7 +14,7 @@ Currently supports NHL score updates using the nhl.com REST API.
 4. Download SportsTicker package from GitHub onto your Pi.
 5. Run prerequisites script: `sudo bash installPrerequisites.sh`
 6. Initialize database: `python3 initializeDatabase.py`
-7. Connect 4 LEDs and 1 LCD to your Pi.
+7. Connect 4 LEDs, 1 LCD and 1 button to your Pi.
     * Coming later: Picture tutorial of connecting hardware to Pi.
 8. Customize config.ini to fit your setup.
 9. Run main script to constantly check scores: `python3 main.py`
